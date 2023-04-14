@@ -4,13 +4,14 @@ import matplotlib.pyplot as plt
 from Iris_func import *
 import math as m
 import time
+import seaborn as sns
 
 # Parameters
 D = 4                     # Number of features
 C = 3                     # Number of classes
 N_train = 30              # Number of training data
 N_test = 20               # Number of test data
-first_30_to_train = False # Use first 30 data points for training and last 20 for testing
+first_30_to_train = True # Use first 30 data points for training and last 20 for testing
 
 # Load seperate iris data
 setosa = pd.read_csv('Data/class_1.csv')
@@ -108,8 +109,70 @@ for i in range(C*N_test):
 
 print("Confusion matrix for test data: ")
 print(confusion_matrix_test)
+class_labels = ['Class 0', 'Class 1']
+sns.set(font_scale=1.4)
+sns.heatmap(confusion_matrix_test, annot=True, annot_kws={"size": 16}, fmt="d", cmap="Blues",
+            xticklabels=class_labels, yticklabels=class_labels,
+            cbar=False)
 
 # Calculate accuracy
 accuracy_test = np.sum(np.diag(confusion_matrix_test))/np.sum(confusion_matrix_test)
 print("Accuracy for training data: ", round(accuracy_test, 4))
 print("Error rate for training data: ", round(1-accuracy_test, 4))
+
+# END OF TASK 1
+#-----------------------------------------------------------------------------------------
+# START OF TASK 2
+
+# Plot histogram of all features
+
+# Extract features from training data
+feature_1_class_1 = np.array(train_data[:N_train, 0])
+feature_2_class_1 = np.array(train_data[:N_train, 1])
+feature_3_class_1 = np.array(train_data[:N_train, 2])
+feature_4_class_1 = np.array(train_data[:N_train, 3])
+
+feature_1_class_2 = np.array(train_data[N_train:2*N_train, 0])
+feature_2_class_2 = np.array(train_data[N_train:2*N_train, 1])
+feature_3_class_2 = np.array(train_data[N_train:2*N_train, 2])
+feature_4_class_2 = np.array(train_data[N_train:2*N_train, 3])
+
+feature_1_class_3 = np.array(train_data[2*N_train:3*N_train, 0])
+feature_2_class_3 = np.array(train_data[2*N_train:3*N_train, 1])
+feature_3_class_3 = np.array(train_data[2*N_train:3*N_train, 2])
+feature_4_class_3 = np.array(train_data[2*N_train:3*N_train, 3])
+
+# Plot 3 histograms for feature x for all classes
+feature_plot = [feature_1_class_1, feature_1_class_2, feature_1_class_3]
+feature_plot_text = ['Feature 1 for class 1', 'Feature 1 for class 2', 'Feature 1 for class 3']
+
+# Create a 3x1 grid of subplots
+fig, axs = plt.subplots(3, 1, figsize=(8, 10), sharex=True, sharey=True)
+
+# Plot histogram for class 1
+axs[0].hist(feature_plot[0], bins=20, color='red', alpha=0.5, label='Class 1')
+axs[0].set_title(feature_plot_text[0])
+axs[0].set_xlabel('Feature')
+axs[0].set_ylabel('Frequency')
+axs[0].legend()
+
+# Plot histogram for class 2
+axs[1].hist(feature_plot[1], bins=20, color='blue', alpha=0.5, label='Class 2')
+axs[1].set_title(feature_plot_text[0])
+axs[1].set_xlabel('Feature')
+axs[1].set_ylabel('Frequency')
+axs[1].legend()
+
+# Plot histogram for class 3
+axs[2].hist(feature_plot[2], bins=20, color='green', alpha=0.5, label='Class 3')
+axs[2].set_title(feature_plot_text[0])
+axs[2].set_xlabel('Feature')
+axs[2].set_ylabel('Frequency')
+axs[2].legend()
+
+plt.subplots_adjust(hspace=0.5)
+plt.show()
+
+
+
+
