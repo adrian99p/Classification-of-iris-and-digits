@@ -109,11 +109,17 @@ for i in range(C*N_test):
 
 print("Confusion matrix for test data: ")
 print(confusion_matrix_test)
-class_labels = ['Class 0', 'Class 1']
-sns.set(font_scale=1.4)
-sns.heatmap(confusion_matrix_test, annot=True, annot_kws={"size": 16}, fmt="d", cmap="Blues",
-            xticklabels=class_labels, yticklabels=class_labels,
-            cbar=False)
+class_labels = ['Class 0', 'Class 1', 'Class 2']
+
+test = [3, 0, 0, 3, 0, 0, 0, 0, 3]
+
+# Use sns.heatmap to plot confusion matrix
+df_cm = pd.DataFrame(confusion_matrix_test, index = [i for i in class_labels],
+                    columns = [i for i in class_labels])
+plt.figure(figsize = (10,7))
+sns.heatmap(df_cm, annot=True)
+
+
 
 # Calculate accuracy
 accuracy_test = np.sum(np.diag(confusion_matrix_test))/np.sum(confusion_matrix_test)
