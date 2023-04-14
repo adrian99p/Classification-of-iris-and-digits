@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from Iris_func import *
-import math as m
 import time
 import seaborn as sns
 from scipy.stats import gaussian_kde
@@ -13,7 +12,9 @@ C = 3                     # Number of classes
 N_train = 30              # Number of training data
 N_test = 20               # Number of test data
 first_30_to_train = True  # Use first 30 data points for training and last 20 for testing
-disabled_features = ['SW', 'SL', 'PL'] # Which features to disable
+plot_histogram = True     # Plot histograms of the data
+
+disabled_features = [] # Which features to disable
 D = D - len(disabled_features) # Update D
 # Dictionary mapping feature keys to integer values
 feature_to_int_dict = {
@@ -152,102 +153,62 @@ plt.title("Confusion matrix for training data using first 30")
 sns.heatmap(df_cm_train, annot=True)
 
 
+if plot_histogram and D == 4: 
+    # Plot 3 histograms for feature x for all classes
 
-# Plot 3 histograms for feature x for all classes
+    #Extract features from training data
+    feature_1_class_1 = np.array(train_data[:N_train, 0])
+    feature_2_class_1 = np.array(train_data[:N_train, 1])
+    feature_3_class_1 = np.array(train_data[:N_train, 2])
+    feature_4_class_1 = np.array(train_data[:N_train, 3])
 
-# Extract features from training data
-# feature_1_class_1 = np.array(train_data[:N_train, 0])
-# feature_2_class_1 = np.array(train_data[:N_train, 1])
-# feature_3_class_1 = np.array(train_data[:N_train, 2])
-# feature_4_class_1 = np.array(train_data[:N_train, 3])
+    feature_1_class_2 = np.array(train_data[N_train:2*N_train, 0])
+    feature_2_class_2 = np.array(train_data[N_train:2*N_train, 1])
+    feature_3_class_2 = np.array(train_data[N_train:2*N_train, 2])
+    feature_4_class_2 = np.array(train_data[N_train:2*N_train, 3])
 
-# feature_1_class_2 = np.array(train_data[N_train:2*N_train, 0])
-# feature_2_class_2 = np.array(train_data[N_train:2*N_train, 1])
-# feature_3_class_2 = np.array(train_data[N_train:2*N_train, 2])
-# feature_4_class_2 = np.array(train_data[N_train:2*N_train, 3])
+    feature_1_class_3 = np.array(train_data[2*N_train:3*N_train, 0])
+    feature_2_class_3 = np.array(train_data[2*N_train:3*N_train, 1])
+    feature_3_class_3 = np.array(train_data[2*N_train:3*N_train, 2])
+    feature_4_class_3 = np.array(train_data[2*N_train:3*N_train, 3])
 
-# feature_1_class_3 = np.array(train_data[2*N_train:3*N_train, 0])
-# feature_2_class_3 = np.array(train_data[2*N_train:3*N_train, 1])
-# feature_3_class_3 = np.array(train_data[2*N_train:3*N_train, 2])
-# feature_4_class_3 = np.array(train_data[2*N_train:3*N_train, 3])
+    feature_plot_1 = [feature_1_class_1, feature_1_class_2, feature_1_class_3]
+    feature_plot_2 = [feature_2_class_1, feature_2_class_2, feature_2_class_3]
+    feature_plot_3 = [feature_3_class_1, feature_3_class_2, feature_3_class_3]
+    feature_plot_4 = [feature_4_class_1, feature_4_class_2, feature_4_class_3]
+    feature_plot_1_text = ['Setosa', 'Versicolour', 'Veriginica']
+    feature_plot_2_text = ['Setosa', 'Versicolour', 'Veriginica']
+    feature_plot_3_text = ['Setosa', 'Versicolour', 'Veriginica']
+    feature_plot_4_text = ['Setosa', 'Versicolour', 'Veriginica']
 
-# feature_plot_1 = [feature_1_class_1, feature_1_class_2, feature_1_class_3]
-# feature_plot_2 = [feature_2_class_1, feature_2_class_2, feature_2_class_3]
-# feature_plot_3 = [feature_3_class_1, feature_3_class_2, feature_3_class_3]
-# feature_plot_4 = [feature_4_class_1, feature_4_class_2, feature_4_class_3]
-# feature_plot_1_text = ['Setosa', 'Versicolour', 'Veriginica']
-# feature_plot_2_text = ['Setosa', 'Versicolour', 'Veriginica']
-# feature_plot_3_text = ['Setosa', 'Versicolour', 'Veriginica']
-# feature_plot_4_text = ['Setosa', 'Versicolour', 'Veriginica']
+    # Define the features and their corresponding labels
+    features = [feature_plot_1, feature_plot_2, feature_plot_3, feature_plot_4]
+    feature_labels = [feature_plot_1_text, feature_plot_2_text, feature_plot_3_text, feature_plot_4_text]
+    # Make list of color for each class to use in plots
+    colors = ['red', 'blue', 'green']
+    x_lable = ['Spetal Length', 'Spetal Width', 'Petal Length', 'Petal Width']
+    # Loop through each feature
+    for i, feature in enumerate(features):
+        # Create a new figure for each feature
+        plt.figure()
+
+        # Loop through each class and plot histogram with probability density curve
+        for j, data in enumerate(feature):
+            # Plot histogram
+            plt.hist(data, density=True, alpha=0.5, label=feature_labels[i][j], color=colors[j])
+
+            
+            # Plot probability density curve
+            kde = gaussian_kde(data)
+            x_vals = np.linspace(min(data), max(data), 100)
+            plt.plot(x_vals, kde(x_vals), color=colors[j])
+
+        # Set title, labels, and legend
+        plt.title('Histogram with Probability Density Curve for ' + x_lable[i])
+        plt.xlabel(x_lable[i])
+        plt.ylabel('Number of occurences')
+        plt.legend()
 
 
-
-
-# # Define the features and their corresponding labels
-# features = [feature_plot_1, feature_plot_2, feature_plot_3, feature_plot_4]
-# feature_labels = [feature_plot_1_text, feature_plot_2_text, feature_plot_3_text, feature_plot_4_text]
-# # Make list of color for each class to use in plots
-# colors = ['red', 'blue', 'green']
-# x_lable = ['Spetal Length', 'Spetal Width', 'Petal Length', 'Petal Width']
-# # Loop through each feature
-# for i, feature in enumerate(features):
-#     # Create a new figure for each feature
-#     plt.figure()
-
-#     # Loop through each class and plot histogram with probability density curve
-#     for j, data in enumerate(feature):
-#         # Plot histogram
-#         plt.hist(data, density=True, alpha=0.5, label=feature_labels[i][j], color=colors[j])
-
-        
-#         # Plot probability density curve
-#         kde = gaussian_kde(data)
-#         x_vals = np.linspace(min(data), max(data), 100)
-#         plt.plot(x_vals, kde(x_vals), color=colors[j])
-
-#     # Set title, labels, and legend
-#     plt.title('Histogram with Probability Density Curve for ' + x_lable[i])
-#     plt.xlabel(x_lable[i])
-#     plt.ylabel('Number of occurences')
-#     plt.legend()
-
-# # Show all figures
+# Show all figures     
 plt.show()
-
-
-
-
-
-
-
-
-# # Create a 3x1 grid of subplots
-# fig, axs = plt.subplots(3, 1, figsize=(8, 10), sharex=True, sharey=True)
-
-# # Plot histogram for class 1
-# axs[0].hist(feature_plot[0], bins=20, color='red', alpha=0.5, label='Class 1')
-# axs[0].set_title(feature_plot_text[0])
-# axs[0].set_xlabel('Feature')
-# axs[0].set_ylabel('Frequency')
-# axs[0].legend()
-
-# # Plot histogram for class 2
-# axs[1].hist(feature_plot[1], bins=20, color='blue', alpha=0.5, label='Class 2')
-# axs[1].set_title(feature_plot_text[0])
-# axs[1].set_xlabel('Feature')
-# axs[1].set_ylabel('Frequency')
-# axs[1].legend()
-
-# # Plot histogram for class 3
-# axs[2].hist(feature_plot[2], bins=20, color='green', alpha=0.5, label='Class 3')
-# axs[2].set_title(feature_plot_text[0])
-# axs[2].set_xlabel('Feature')
-# axs[2].set_ylabel('Frequency')
-# axs[2].legend()
-
-# plt.subplots_adjust(hspace=0.5)
-# plt.show()
-
-
-
-
