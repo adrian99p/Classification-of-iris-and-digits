@@ -115,23 +115,20 @@ accuracy_test = np.sum(np.diag(confusion_matrix_test))/np.sum(confusion_matrix_t
 print("Accuracy for training data: ", round(accuracy_test, 4))
 print("Error rate for training data: ", round(1-accuracy_test, 4))
 
-class_labels = ['Class 0', 'Class 1', 'Class 2']
 
 # END OF TASK 1
 #-----------------------------------------------------------------------------------------
 # START OF TASK 2
 
-# Use sns.heatmap to plot confusion matrix
-df_cm = pd.DataFrame(confusion_matrix_test, index = [i for i in class_labels],
-                    columns = [i for i in class_labels])
+# Plotting confusion matrices for training and test data
+class_labels = ['Class 0', 'Class 1', 'Class 2']
+df_cm_test = pd.DataFrame(confusion_matrix_test, index = [i for i in class_labels], columns = [i for i in class_labels])
 plt.figure(figsize = (10,7))
-sns.heatmap(df_cm, annot=True)
+sns.heatmap(df_cm_test, annot=True)
 
-# Use sns.heatmap to plot confusion matrix
-df_cm = pd.DataFrame(confusion_matrix_train, index = [i for i in class_labels],
-                    columns = [i for i in class_labels])
+df_cm_train = pd.DataFrame(confusion_matrix_train, index = [i for i in class_labels], columns = [i for i in class_labels])
 plt.figure(figsize = (10,7))
-sns.heatmap(df_cm, annot=True)
+sns.heatmap(df_cm_train, annot=True)
 
 
 
