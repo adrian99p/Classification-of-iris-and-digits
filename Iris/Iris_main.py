@@ -11,7 +11,7 @@ D = 4                     # Number of features
 C = 3                     # Number of classes
 N_train = 30              # Number of training data
 N_test = 20               # Number of test data
-first_30_to_train = True # Use first 30 data points for training and last 20 for testing
+first_30_to_train = False # Use first 30 data points for training and last 20 for testing
 
 # Load seperate iris data
 setosa = pd.read_csv('Data/class_1.csv')
@@ -44,7 +44,7 @@ label_test = np.vstack((np.tile(t1, (N_test, 1)), np.tile(t2, (N_test, 1)), np.t
 # Training the LDC
 W = np.zeros((C, D+1))
 training = True
-iterations = 2000
+iterations = 1000
 MSE_list = []
 print("Starting training")
 start_time = time.time()
@@ -68,7 +68,7 @@ for i in range(iterations):
     
 end_time = time.time()
 elapsed_time = end_time - start_time
-print("Training time: ", int(elapsed_time))
+print("Training time: ", elapsed_time)
 print("Training done")
 
 print("W: ", W)
@@ -86,7 +86,7 @@ for i in range(C*N_train):
     else:
         confusion_matrix_train[np.argmax(t_k), np.argmax(g_k)] += 1
 
-print("Confusion matrix for training data: ")
+print("Confusion matrix for training data using: ")
 print(confusion_matrix_train)
 
 # Calculate accuracy in percent
@@ -124,10 +124,12 @@ print("Error rate for training data: ", round(1-accuracy_test, 4))
 class_labels = ['Class 0', 'Class 1', 'Class 2']
 df_cm_test = pd.DataFrame(confusion_matrix_test, index = [i for i in class_labels], columns = [i for i in class_labels])
 plt.figure(figsize = (10,7))
+plt.title("Confusion matrix for test data using last 30")
 sns.heatmap(df_cm_test, annot=True)
 
 df_cm_train = pd.DataFrame(confusion_matrix_train, index = [i for i in class_labels], columns = [i for i in class_labels])
 plt.figure(figsize = (10,7))
+plt.title("Confusion matrix for training data using last 30")
 sns.heatmap(df_cm_train, annot=True)
 
 
