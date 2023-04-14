@@ -1,0 +1,5 @@
+Accuracy for training data:  0.9333
+Error rate for training data:  0.0667
+
+Accuracy for test data:  0.9833
+Error rate for test data:  0.0167
