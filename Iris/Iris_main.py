@@ -94,7 +94,6 @@ for i in range(C*N_train):
 print("Confusion matrix for training data: ")
 print(confusion_matrix_train)
 
-
 # Find confusion matrix for test data
 confusion_matrix_test = np.zeros((C, C))
 for i in range(C*N_test):

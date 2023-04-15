@@ -5,15 +5,12 @@ from Iris_functions import *
 import seaborn as sns
 from scipy.stats import gaussian_kde
 
-
-# Data loading functions
-# Remove unwanted features
+# Data processing and loading functions
 def remove_features(data, disabled_features):
     data.columns = data.columns.str.strip()
     data = data.drop(columns=disabled_features)
     return data
 
-# Create training and test data
 def create_train_test_data(setosa, versicolour, verginica, N_train, N_test, first_30_to_train):
     if first_30_to_train:
         train_data = pd.concat([setosa[:N_train], versicolour[:N_train], verginica[:N_train]])
@@ -27,7 +24,7 @@ def create_train_test_data(setosa, versicolour, verginica, N_train, N_test, firs
         test_data = test_data.values
     return train_data, test_data
 
-# Training functions
+# Functoins for training algorithm 3.1 in compendium
 def sigmoid(x):
     return np.array(1 / (1 + np.exp(-x)))
 
@@ -70,9 +67,7 @@ def plot_confusion_matrix(confusion_matrix_train,confusion_matrix_test, label_na
         plt.title("Confusion matrix for training data using last 30")
     sns.heatmap(df_cm_train, annot=True)
 
-#Plot 3 histograms for feature x for all classes
 def plot_histograms(train_data, N_train):
-    
     #Extract features from training data
     feature_1_class_1 = np.array(train_data[:N_train, 0])
     feature_2_class_1 = np.array(train_data[:N_train, 1])
@@ -111,7 +106,6 @@ def plot_histograms(train_data, N_train):
 
         #Loop through each class and plot histogram with probability density curve
         for j, data in enumerate(feature):
-            #Plot histogram
             plt.hist(data, density=True, alpha=0.5, label=feature_labels[i][j], color=colors[j])
             
             #Plot probability density curve
@@ -119,7 +113,6 @@ def plot_histograms(train_data, N_train):
             x_vals = np.linspace(min(data), max(data), 100)
             plt.plot(x_vals, kde(x_vals), color=colors[j])
 
-       # Set title, labels, and legend
         plt.title('Histogram with Probability Density Curve for ' + x_lable[i])
         plt.xlabel(x_lable[i])
         plt.ylabel('Number of occurences')
