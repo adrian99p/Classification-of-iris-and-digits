@@ -1,17 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
 
 # Make dummy confusion matrix
-confusion_matrix = np.array([[0.9, 0.1, 0.0],
-                                [0.1, 0.8, 0.1],
-                                [0.0, 0.1, 0.9]])
+confusion_matrix_test = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 
-# Make seaborn heatmap
-sns.set(font_scale=1.4)
-sns.heatmap(confusion_matrix, annot=True, annot_kws={"size": 16}, fmt="g", cmap="Blues",
-            xticklabels=class_labels, yticklabels=class_labels,
-            cbar=False)
+# Plot confusion matrix
+class_labels = ['Setosa', 'Versicolour', 'Veriginica']
+df_cm_test = pd.DataFrame(confusion_matrix_test, index = [i for i in class_labels], columns = [i for i in class_labels])
+plt.figure(figsize = (10,7))
+
+print("Confusion matrix for test data: ")
 
 
 

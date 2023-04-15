@@ -154,7 +154,7 @@ sns.heatmap(df_cm_train, annot=True)
 
 
 if plot_histogram and D == 4: 
-    # Plot 3 histograms for feature x for all classes
+    #Plot 3 histograms for feature x for all classes
 
     #Extract features from training data
     feature_1_class_1 = np.array(train_data[:N_train, 0])
@@ -181,34 +181,32 @@ if plot_histogram and D == 4:
     feature_plot_3_text = ['Setosa', 'Versicolour', 'Veriginica']
     feature_plot_4_text = ['Setosa', 'Versicolour', 'Veriginica']
 
-    # Define the features and their corresponding labels
+    #Define the features and their corresponding labels
     features = [feature_plot_1, feature_plot_2, feature_plot_3, feature_plot_4]
     feature_labels = [feature_plot_1_text, feature_plot_2_text, feature_plot_3_text, feature_plot_4_text]
-    # Make list of color for each class to use in plots
+    #Make list of color for each class to use in plots
     colors = ['red', 'blue', 'green']
     x_lable = ['Spetal Length', 'Spetal Width', 'Petal Length', 'Petal Width']
-    # Loop through each feature
+    #Loop through each feature
     for i, feature in enumerate(features):
-        # Create a new figure for each feature
+        #Create a new figure for each feature
         plt.figure()
 
-        # Loop through each class and plot histogram with probability density curve
+        #Loop through each class and plot histogram with probability density curve
         for j, data in enumerate(feature):
-            # Plot histogram
+            #Plot histogram
             plt.hist(data, density=True, alpha=0.5, label=feature_labels[i][j], color=colors[j])
-
             
-            # Plot probability density curve
+            #Plot probability density curve
             kde = gaussian_kde(data)
             x_vals = np.linspace(min(data), max(data), 100)
             plt.plot(x_vals, kde(x_vals), color=colors[j])
 
-        # Set title, labels, and legend
+       # Set title, labels, and legend
         plt.title('Histogram with Probability Density Curve for ' + x_lable[i])
         plt.xlabel(x_lable[i])
         plt.ylabel('Number of occurences')
         plt.legend()
-
 
 # Show all figures     
 plt.show()
