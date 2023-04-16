@@ -1,40 +1,50 @@
 import scipy.io
 import numpy as np
 import matplotlib.pyplot as plt
+from keras.datasets import mnist
 from Digits_functions import *
 
-# Load MATLAB file
-mat_file = scipy.io.loadmat('MNist_ttt4275/data_all.mat')
+# Print np array nicely
+np.set_printoptions(precision=3, suppress=True)
 
-# Access variables in the MATLAB file
-num_test = np.array(mat_file['num_test'])
-num_train = np.array(mat_file['num_train'])
-testlab = np.array(mat_file['testlab'])
-trainlab = np.array(mat_file['trainlab'])
-trainv = np.array(mat_file['trainv'])
-vec_size = np.array(mat_file['vec_size'])
-testv = np.array(mat_file['testv'])
+# Parameters
+N_train = 60000     # Number of training samples                 
+N_test  = 10000     # Number of test samples
+C = 10              # Number of classes
+N_pixels = 784      # Number of pixels in image
 
-# Read binary data from file
-with open('MNist_ttt4275/test_images.bin', 'rb') as f:
-    # Read the binary data into a NumPy array
-    data = np.fromfile(f, dtype=np.uint8)
+# Load MNIST data
+(train_data, train_label), (test_data, test_label) = mnist.load_data()
 
-pixel_size = 28
-# Calculate number of images based on actual size of data
-num_images = len(data) // (pixel_size * pixel_size)
-if len(data) % (pixel_size * pixel_size) != 0:
-    print("Warning: Data size does not match assumed image size.")
-    print("Actual number of images may be different.")
+# Normalize data so grayscale values are between 0 and 1
+train_data = train_data / 255
+test_data = test_data / 255
 
-# Reshape data into 28x28 matrices with row-major order
-images = data[:num_images * pixel_size * pixel_size].reshape(num_images, pixel_size, pixel_size, order='C')
+# Calculate mean value of training data for each label
+mean_data = mean_ref(train_data, train_label, C, N_pixels)
 
-print(images.shape)
+# Classify test data with nearest neighbor classifier
+classified_labels = []
+for i in range(N_test):
+    # Get test image
+    test_image = test_data[i]
 
-# Display 2 images using a for loop
-for i in range(2):
-    plt.imshow(images[i], cmap='gray')
-    plt.title(f"Image {i+1}")
-    plt.axis('off')
-    plt.show()
+    distances = []
+    for j in range(C):
+        mean_image = mean_data[j]
+        distance = euclidean_distance(test_image, mean_image, N_pixels)
+        distances.append(distance)
+    
+    # Find label with smallest distance
+    label = np.argmin(distances)
+    if label == train_data[i]:
+        
+    classified_labels.append(label)
+
+# Find confusion matrix
+confusion_matrix = confusion_matrix_func(classified_labels, test_label, C)
+print(confusion_matrix)
+
+
+# Global to show images
+plt.show()

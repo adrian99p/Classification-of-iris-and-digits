@@ -32,7 +32,7 @@ train_data, test_data = create_train_test_data(setosa, versicolour, verginica, N
 max_features_val = np.array([train_data[:,i].max() for i in range(D)])
 normal_train_data = train_data/max_features_val
 
-# Target vectors
+# Target vectors one hot encoded
 t1 = np.array([1, 0, 0])
 t2 = np.array([0, 1, 0])
 t3 = np.array([0, 0, 1])
@@ -76,7 +76,7 @@ print("Weights:")
 print(W)
 
 # Plot functions
-#plot_MSE(MSE_list)
+plot_MSE(MSE_list)
 
 # Find confusion matrix for training data
 confusion_matrix_train = np.zeros((C, C))
