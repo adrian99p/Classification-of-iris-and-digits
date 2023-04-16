@@ -1,5 +1,7 @@
 import scipy.io
 import numpy as np
+import matplotlib.pyplot as plt
+from Digits_functions import *
 
 # Load MATLAB file
 mat_file = scipy.io.loadmat('MNist_ttt4275/data_all.mat')
@@ -12,16 +14,26 @@ trainlab = np.array(mat_file['trainlab'])
 trainv = np.array(mat_file['trainv'])
 vec_size = np.array(mat_file['vec_size'])
 
-# Use the loaded data in Python
-print("num_test:")
-print(num_test)
-print("num_train:")
-print(num_train)
-print("testlab:")
-print(testlab)
-print("trainlab:")
-print(trainlab)
-print("trainv:")
-print(trainv)
-print("vec_size:")
-print(vec_size)
+# Read binary data from file
+with open('MNist_ttt4275/test_images.bin', 'rb') as f:
+    # Read the binary data into a NumPy array
+    data = np.fromfile(f, dtype=np.uint8)
+
+pixel_size = 28
+# Calculate number of images based on actual size of data
+num_images = len(data) // (pixel_size * pixel_size)
+if len(data) % (pixel_size * pixel_size) != 0:
+    print("Warning: Data size does not match assumed image size.")
+    print("Actual number of images may be different.")
+
+# Reshape data into 28x28 matrices with row-major order
+images = data[:num_images * pixel_size * pixel_size].reshape(num_images, pixel_size, pixel_size, order='C')
+
+print(images.shape)
+
+# Display 2 images using a for loop
+for i in range(2):
+    plt.imshow(images[i], cmap='gray')
+    plt.title(f"Image {i+1}")
+    plt.axis('off')
+    plt.show()
