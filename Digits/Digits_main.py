@@ -13,6 +13,7 @@ testlab = np.array(mat_file['testlab'])
 trainlab = np.array(mat_file['trainlab'])
 trainv = np.array(mat_file['trainv'])
 vec_size = np.array(mat_file['vec_size'])
+testv = np.array(mat_file['testv'])
 
 # Read binary data from file
 with open('MNist_ttt4275/test_images.bin', 'rb') as f:
