@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from keras.datasets import mnist
 from Digits_functions import *
 from sklearn.cluster import KMeans
+import time
 
 # Print np array nicely
 np.set_printoptions(precision=3, suppress=True)
@@ -16,8 +17,10 @@ M_clusters = 64                      # Number of clusters
 visualize_confusion_matrix = False   # Visualize confusion images
 N_Comparisons = 5                    # Number of comparisons to visualize
 visualize_NN_comparison = False      # Visualize nearest neighbor comparison test, prediction
-NN_classification = False                    # Use nearest neighbor classifier
-Kmeans_classification = True                 # Use k-means clustering classifier
+
+NN_mean_classification = False                    # Use nearest neighbor classifier
+NN_actual_classification = True            # Use the actual nearest neighbor classifier
+Kmeans_classification =  False              # Use k-means clustering classifier
 
 # Load MNIST hand written digit data
 (train_data, train_label), (test_data, test_label) = mnist.load_data()
@@ -27,7 +30,8 @@ train_data = train_data / 255
 test_data = test_data / 255
 
 # Classify test data with nearest neighbor classifier -------------------------------------------------------------------
-if NN_classification:
+if NN_mean_classification:
+    print("NN mean classification")
     # Calculate mean value of training data for each label
     mean_data = mean_digit_value_image(train_data, train_label, C, N_pixels)
     classified_labels = []
@@ -38,6 +42,7 @@ if NN_classification:
         test_image = test_data[i]
 
         distances = []
+
         for j in range(C):
             mean_image = mean_data[j]
             distance = euclidean_distance(test_image, mean_image, N_pixels)
@@ -45,6 +50,7 @@ if NN_classification:
         
         # Find label with smallest distance
         label = np.argmin(distances)
+        
         if label == test_label[i]:
             correct_labels_indexes.append(i)
         else:
@@ -58,6 +64,59 @@ if NN_classification:
     # Print error rate
     error_rate = error_rate_func(confusion_matrix)
     print("Error rate: ", error_rate*100, "%")    
+
+# Classify test data with actual nearestest neighbor classifier -------------------------------------------------------------------
+if NN_actual_classification:
+    print("Actual NN classification")
+    classified_labels = []
+    correct_labels_indexes = []
+    failed_labels_indexes = []
+
+    print("Start training")
+    time_start = time.time()
+    # Calculate distance matrix
+    for i in range(N_test):
+        # Get test image
+        test_image = test_data[i]
+
+        distances = []
+        for j in range(N_train):
+            train_image = train_data[j]
+            distance = euclidean_distance(test_image, train_image, N_pixels)
+            distances.append(distance)
+        
+        # Find label with smallest distance
+        closest_test_data_index = np.argmin(distances)
+        label = train_label[closest_test_data_index]       
+
+        if label == test_label[i]:
+            correct_labels_indexes.append(i)
+        else:
+            failed_labels_indexes.append(i)
+        classified_labels.append(label)
+
+    time_end = time.time()
+    # Convert to hours, minutes and seconds
+    time_end = time.time()
+    time_elapsed = time_end - time_start
+    hours = int(time_elapsed // 3600)
+    minutes = int((time_elapsed % 3600) // 60)
+    seconds = int(time_elapsed % 60)
+    print("Training time: ", hours, "h", minutes, "m", seconds, "s")
+
+    # Find confusion matrix
+    confusion_matrix = confusion_matrix_func(classified_labels, test_label, C)
+    print("Confusion matrix: ")
+    print(confusion_matrix)
+
+    # Print error rate
+    error_rate = error_rate_func(confusion_matrix)
+    print("Error rate: ", error_rate*100, "%") 
+    # Save confusion matrix to file
+    np.savetxt("confusion_matrix_actual_NN.txt", confusion_matrix, fmt="%d")
+
+    # Visualize confusion matrix
+    plot_confusion_matrix(confusion_matrix, error_rate)
 
 # ----------------------------------------------------------------------------------------------------------------------
 if Kmeans_classification:
@@ -91,7 +150,7 @@ if Kmeans_classification:
     correct_labels_indexes = []
     failed_labels_indexes = []
     actual_labels = []
-    N_test = 20
+    N_test = 10000
     for i in range(N_test):
         # Get test image
         test_image = test_data[i]
@@ -115,14 +174,17 @@ if Kmeans_classification:
         
 
     print("K-means clustering")
-    print("Number of clusters: ", M_clusters)
-    print("Classified Labels: ")
-    print(classified_labels)
-    print("Actual labels: ")
-    print(actual_labels)
+    # print("Number of clusters: ", M_clusters)
+    # print("Classified Labels: ")
+    # print(classified_labels)
+    # print("Actual labels: ")
+    # print(actual_labels)
 
     # Find confusion matrix
     confusion_matrix = confusion_matrix_func(classified_labels, test_label, C)
+
+    # Print confusion matrix
+    print(confusion_matrix)
 
     # Print error rate
     error_rate = error_rate_func(confusion_matrix)

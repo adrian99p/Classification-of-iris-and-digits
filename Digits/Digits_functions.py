@@ -17,6 +17,7 @@ def euclidean_distance(x, mean, N_pixels):
 
 def confusion_matrix_func(classified_labels, test_label, C):
     confusion_matrix = np.zeros((C, C))
+    
     for i in range(len(classified_labels)):
         confusion_matrix[test_label[i], classified_labels[i]] += 1
     return confusion_matrix
@@ -36,9 +37,9 @@ def error_rate_func(confusion_matrix):
 def plot_digit(data_set, index):
     plt.imshow(data_set[index], cmap=plt.get_cmap('gray'))
 
-def plot_confusion_matrix(confusion_matrix):
+def plot_confusion_matrix(confusion_matrix, error_rate):
     plt.figure(figsize = (10,7))
-    plt.title('Confusion matrix')
+    plt.title('Confusion matrix\n'+'Error rate: '+str(error_rate*100)+'%')
     sns.heatmap(confusion_matrix, annot=True, fmt='.0f') 
     plt.xlabel('Predicted label')
     plt.ylabel('True label')
