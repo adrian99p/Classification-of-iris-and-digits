@@ -4,7 +4,6 @@ from keras.datasets import mnist
 from Digits_functions import *
 from sklearn.cluster import KMeans
 
-
 # Print np array nicely
 np.set_printoptions(precision=3, suppress=True)
 
@@ -16,6 +15,8 @@ N_pixels = 784                       # Number of pixels in image
 visualize_confusion_matrix = False   # Visualize mean images
 N_Comparisons = 5                    # Number of comparisons to visualize
 visualize_NN_comparison = False      # Visualize nearest neighbor comparison
+NN_active = False                     # Use nearest neighbor classifier
+Kmeans_active = True                 # Use k-means classifier
 
 # Load MNIST data
 (train_data, train_label), (test_data, test_label) = mnist.load_data()
@@ -24,50 +25,70 @@ visualize_NN_comparison = False      # Visualize nearest neighbor comparison
 train_data = train_data / 255
 test_data = test_data / 255
 
+# Classify test data with nearest neighbor classifier -------------------------------------------------------------------
 # Calculate mean value of training data for each label
-mean_data = mean_ref(train_data, train_label, C, N_pixels)
+if NN_active:
+    mean_data = mean_ref(train_data, train_label, C, N_pixels)
+    classified_labels = []
+    correct_labels_indexes = []
+    failed_labels_indexes = []
+    for i in range(N_test):
+        # Get test image
+        test_image = test_data[i]
 
-# Classify test data with nearest neighbor classifier
-classified_labels = []
-correct_labels_indexes = []
-failed_labels_indexes = []
-for i in range(N_test):
-    # Get test image
-    test_image = test_data[i]
+        distances = []
+        for j in range(C):
+            mean_image = mean_data[j]
+            distance = euclidean_distance(test_image, mean_image, N_pixels)
+            distances.append(distance)
+        
+        # Find label with smallest distance
+        label = np.argmin(distances)
+        if label == test_label[i]:
+            correct_labels_indexes.append(i)
+        else:
+            failed_labels_indexes.append(i)
+        classified_labels.append(label)
+        
+    # Find confusion matrix
+    confusion_matrix = confusion_matrix_func(classified_labels, test_label, C)
+    print(confusion_matrix)
 
-    distances = []
-    for j in range(C):
-        mean_image = mean_data[j]
-        distance = euclidean_distance(test_image, mean_image, N_pixels)
-        distances.append(distance)
-    
-    # Find label with smallest distance
-    label = np.argmin(distances)
-    if label == test_label[i]:
-        correct_labels_indexes.append(i)
-    else:
-        failed_labels_indexes.append(i)
-    classified_labels.append(label)
-
-# Find confusion matrix
-confusion_matrix = confusion_matrix_func(classified_labels, test_label, C)
-print(confusion_matrix)
-
-# Print error rate
-error_rate = error_rate_func(confusion_matrix)
-print("Error rate: ", error_rate)
+    # Print error rate
+    error_rate = error_rate_func(confusion_matrix)
+    print("Error rate: ", error_rate)    
+# ----------------------------------------------------------------------------------------------------------------------
 
 
-# Perform k-means clustering on training data
-kmeans = KMeans(n_clusters=64, random_state=0).fit(train_data.reshape(N_train, N_pixels))
-kmeans_centers = kmeans.cluster_centers_
-print(kmeans_centers.shape)
+
+# Perform k-means clustering on training data --------------------------------------------------------------------------
+# kmeans = KMeans(n_clusters=64, random_state=0).fit(train_data.reshape(N_train, N_pixels))
+# kmeans_centers = kmeans.cluster_centers_
+
+# Store cluster labels for training data and cluster centers in a file
+# np.savetxt("cluster_labels.txt", kmeans.labels_, fmt="%d")
+# np.savetxt("cluster_centers.txt", kmeans_centers, fmt="%f")
+
+# Load cluster labels and cluster centers from file
+kmeans_labels = np.loadtxt("cluster_labels.txt", dtype=int)
+kmeans_centers = np.loadtxt("cluster_centers.txt")
+
+cluster_labels = kmeans_labels
+digit_labels = train_label
+cluster_to_digit = {}
+for cluster_label in range(len(kmeans_centers)):
+    cluster_digit_labels = digit_labels[cluster_labels == cluster_label]
+    majority_digit_label = np.argmax(np.bincount(cluster_digit_labels))
+    cluster_to_digit[cluster_label] = majority_digit_label
 
 # Classify test data with nearest neighbor classifier
 classes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 classified_labels = []
 correct_labels_indexes = []
 failed_labels_indexes = []
+test_labels = []
+actual_labels = []
+N_test = 10
 for i in range(N_test):
     # Get test image
     test_image = test_data[i]
@@ -77,11 +98,33 @@ for i in range(N_test):
         mean_image = kmeans_centers[j]
         distance = euclidean_distance(test_image, mean_image, N_pixels)
         distances.append(distance)
-    
+
     # Find label with smallest distance
     label = np.argmin(distances)
-    
-    
+    label = cluster_to_digit[label]
+    test_labels.append(label)
+    actual_labels.append(test_label[i])
+
+print("K-means clustering")
+print("Number of clusters: ", len(kmeans_centers))
+print("Labels: ")
+print(test_labels)
+print("Actual labels: ")
+print(actual_labels)
+
+# Find confusion matrix
+confusion_matrix = confusion_matrix_func(test_labels, actual_labels, C)
+#print(confusion_matrix)
+
+# Print error rate
+error_rate = error_rate_func(confusion_matrix)
+print("Error rate: ", error_rate)
+
+# Plot confusion matrix
+plot_confusion_matrix(confusion_matrix)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 # Visualize confusion matrix
 if visualize_confusion_matrix:
     plot_confusion_matrix(confusion_matrix)
