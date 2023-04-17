@@ -12,11 +12,11 @@ N_train = 60000                      # Number of training samples
 N_test  = 10000                      # Number of test samples
 C = 10                               # Number of classes
 N_pixels = 784                       # Number of pixels in image
-visualize_confusion_matrix = False   # Visualize mean images
+visualize_confusion_matrix = False   # Visualize confusion images
 N_Comparisons = 5                    # Number of comparisons to visualize
-visualize_NN_comparison = False      # Visualize nearest neighbor comparison
-NN_active = False                     # Use nearest neighbor classifier
-Kmeans_active = True                 # Use k-means classifier
+visualize_NN_comparison = False      # Visualize nearest neighbor comparison test, prediction
+NN_active = False                    # Use nearest neighbor classifier
+Kmeans_active = True                 # Use k-means clustering classifier
 
 # Load MNIST data
 (train_data, train_label), (test_data, test_label) = mnist.load_data()
@@ -57,9 +57,8 @@ if NN_active:
     # Print error rate
     error_rate = error_rate_func(confusion_matrix)
     print("Error rate: ", error_rate)    
+
 # ----------------------------------------------------------------------------------------------------------------------
-
-
 
 # Perform k-means clustering on training data --------------------------------------------------------------------------
 # kmeans = KMeans(n_clusters=64, random_state=0).fit(train_data.reshape(N_train, N_pixels))
@@ -73,6 +72,7 @@ if NN_active:
 kmeans_labels = np.loadtxt("cluster_labels.txt", dtype=int)
 kmeans_centers = np.loadtxt("cluster_centers.txt")
 
+# Map cluster labels to digit labels using majority voting method
 cluster_labels = kmeans_labels
 digit_labels = train_label
 cluster_to_digit = {}
@@ -81,14 +81,25 @@ for cluster_label in range(len(kmeans_centers)):
     majority_digit_label = np.argmax(np.bincount(cluster_digit_labels))
     cluster_to_digit[cluster_label] = majority_digit_label
 
+# Plot cluster_to_digit image
+fig, axes = plt.subplots(8, 8, figsize=(10, 10))
+fig.suptitle("64 clusters mapped to a digit ", fontsize=16, fontweight="bold")
+
+for i in range(len(cluster_to_digit)):
+    digit = cluster_to_digit[i]
+    mean_image = kmeans_centers[i]
+    plt.subplot(8, 8, i + 1)
+    plt.imshow(mean_image.reshape(28, 28), cmap="gray")
+    plt.title(digit, fontsize=8, color="red", fontweight="bold", y=-0.33, x=0.5)
+    plt.axis("off")
+
 # Classify test data with nearest neighbor classifier
-classes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 classified_labels = []
 correct_labels_indexes = []
 failed_labels_indexes = []
 test_labels = []
 actual_labels = []
-N_test = 10
+N_test = 20
 for i in range(N_test):
     # Get test image
     test_image = test_data[i]
@@ -118,10 +129,10 @@ confusion_matrix = confusion_matrix_func(test_labels, actual_labels, C)
 
 # Print error rate
 error_rate = error_rate_func(confusion_matrix)
-print("Error rate: ", error_rate)
+print("Error rate: ", error_rate*100, "%")
 
 # Plot confusion matrix
-plot_confusion_matrix(confusion_matrix)
+#plot_confusion_matrix(confusion_matrix)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
