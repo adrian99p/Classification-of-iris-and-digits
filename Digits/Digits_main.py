@@ -64,13 +64,13 @@ if NN_active:
 # kmeans = KMeans(n_clusters=64, random_state=0).fit(train_data.reshape(N_train, N_pixels))
 # kmeans_centers = kmeans.cluster_centers_
 
-# Store cluster labels for training data and cluster centers in a file
-# np.savetxt("cluster_labels.txt", kmeans.labels_, fmt="%d")
-# np.savetxt("cluster_centers.txt", kmeans_centers, fmt="%f")
+# Store cluster labels for training data and cluster centers in a file in a folder called "Digits"
+# np.savetxt("kmeans_trained/cluster_labels.txt", kmeans.labels_, fmt="%d")
+# np.savetxt("kmeans_trained/cluster_centers.txt", kmeans_centers, fmt="%f")
 
 # Load cluster labels and cluster centers from file
-kmeans_labels = np.loadtxt("cluster_labels.txt", dtype=int)
-kmeans_centers = np.loadtxt("cluster_centers.txt")
+kmeans_labels = np.loadtxt("kmeans_trained/cluster_labels.txt", dtype=int)
+kmeans_centers = np.loadtxt("kmeans_trained/cluster_centers.txt", dtype=float)
 
 # Map cluster labels to digit labels using majority voting method
 cluster_labels = kmeans_labels
@@ -81,17 +81,19 @@ for cluster_label in range(len(kmeans_centers)):
     majority_digit_label = np.argmax(np.bincount(cluster_digit_labels))
     cluster_to_digit[cluster_label] = majority_digit_label
 
-# Plot cluster_to_digit image
+# Plot cluster_to_digit image in sorted order
 fig, axes = plt.subplots(8, 8, figsize=(10, 10))
 fig.suptitle("64 clusters mapped to a digit ", fontsize=16, fontweight="bold")
 
-for i in range(len(cluster_to_digit)):
-    digit = cluster_to_digit[i]
-    mean_image = kmeans_centers[i]
+cluster_to_digit_sorted = sorted(cluster_to_digit.items(), key=lambda x: x[1])
+for i in range(len(cluster_to_digit_sorted)):
+    digit = cluster_to_digit_sorted[i][1]
+    mean_image = kmeans_centers[cluster_to_digit_sorted[i][0]]
     plt.subplot(8, 8, i + 1)
     plt.imshow(mean_image.reshape(28, 28), cmap="gray")
     plt.title(digit, fontsize=8, color="red", fontweight="bold", y=-0.33, x=0.5)
     plt.axis("off")
+plt.show()
 
 # Classify test data with nearest neighbor classifier
 classified_labels = []
