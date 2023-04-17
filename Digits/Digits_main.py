@@ -90,7 +90,6 @@ if Kmeans_classification:
     classified_labels = []
     correct_labels_indexes = []
     failed_labels_indexes = []
-    test_labels = []
     actual_labels = []
     N_test = 20
     for i in range(N_test):
@@ -106,22 +105,29 @@ if Kmeans_classification:
         # Find label with smallest distance
         label = np.argmin(distances)
         label = cluster_to_digit[label]
-        test_labels.append(label)
+        classified_labels.append(label)
         actual_labels.append(test_label[i])
 
+        if label == test_label[i]:
+            correct_labels_indexes.append(i)
+        else:
+            failed_labels_indexes.append(i)
+        
+
     print("K-means clustering")
-    print("Number of clusters: ", len(kmeans_centers))
-    print("Labels: ")
-    print(test_labels)
+    print("Number of clusters: ", M_clusters)
+    print("Classified Labels: ")
+    print(classified_labels)
     print("Actual labels: ")
     print(actual_labels)
 
     # Find confusion matrix
-    confusion_matrix = confusion_matrix_func(test_labels, actual_labels, C)
+    confusion_matrix = confusion_matrix_func(classified_labels, test_label, C)
 
     # Print error rate
     error_rate = error_rate_func(confusion_matrix)
     print("Error rate: ", error_rate*100, "%")
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 

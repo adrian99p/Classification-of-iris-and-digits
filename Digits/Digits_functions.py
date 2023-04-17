@@ -17,7 +17,7 @@ def euclidean_distance(x, mean, N_pixels):
 
 def confusion_matrix_func(classified_labels, test_label, C):
     confusion_matrix = np.zeros((C, C))
-    for i in range(len(test_label)):
+    for i in range(len(classified_labels)):
         confusion_matrix[test_label[i], classified_labels[i]] += 1
     return confusion_matrix
 
@@ -92,7 +92,6 @@ def plot_cluster_to_digit(cluster_to_digit, kmeans_centers,M_clusters):
         plt.imshow(mean_image.reshape(28, 28), cmap="gray")
         plt.title(digit, fontsize=8, color="red", fontweight="bold", y=-0.33, x=0.5)
         plt.axis("off")
-
-     
+        
     plt.show()
 
