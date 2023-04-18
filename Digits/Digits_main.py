@@ -19,7 +19,7 @@ visualize_confusion_matrix = False   # Visualize confusion images
 N_Comparisons = 5                    # Number of comparisons to visualize
 visualize_NN_comparison = False      # Visualize nearest neighbor comparison test, prediction
 
-NN_mean_classification = False             # Use nearest neighbor classifier
+NN_mean_classification = True             # Use nearest neighbor classifier
 NN_actual_classification = False           # Use the actual nearest neighbor classifier
 Kmeans_classification =  True             # Use k-means clustering classifier
 KNN_classification = False                 # Use k-nearest neighbor classifier
@@ -33,6 +33,8 @@ test_data = test_data / 255
 
 # Classify test data with nearest neighbor classifier -------------------------------------------------------------------
 if NN_mean_classification:
+    time_start = time.time()
+
     print("NN mean classification")
     # Calculate mean value of training data for each label
     mean_data = mean_digit_value_image(train_data, train_label, C, N_pixels)
@@ -59,6 +61,14 @@ if NN_mean_classification:
             failed_labels_indexes.append(i)
         classified_labels.append(label)
         
+    time_end = time.time()
+    # Convert to hours, minutes and seconds
+    time_elapsed = time_end - time_start
+    hours = int(time_elapsed // 3600)
+    minutes = int((time_elapsed % 3600) // 60)
+    seconds = int(time_elapsed % 60)
+    print("Training time: ", hours, "h", minutes, "m", seconds, "s")
+
     # Find confusion matrix
     confusion_matrix = confusion_matrix_func(classified_labels, test_label, C)
     print(confusion_matrix)
@@ -122,6 +132,7 @@ if NN_actual_classification:
 
 # ----------------------------------------------------------------------------------------------------------------------
 if Kmeans_classification:
+    time = time.time()
     print("K-means classification")
     # Perform k-means clustering on training data 
     start_training = True
@@ -175,7 +186,14 @@ if Kmeans_classification:
             correct_labels_indexes.append(i)
         else:
             failed_labels_indexes.append(i)
-        
+    
+    time_end = time.time()
+    # Convert to hours, minutes and seconds
+    time_elapsed = time_end - time_start
+    hours = int(time_elapsed // 3600)
+    minutes = int((time_elapsed % 3600) // 60)
+    seconds = int(time_elapsed % 60)
+    print("Training time: ", hours, "h", minutes, "m", seconds, "s")
 
     # Find confusion matrix
     confusion_matrix = confusion_matrix_func(classified_labels, test_label, C)
@@ -189,6 +207,7 @@ if Kmeans_classification:
 
 # ----------------------------------------------------------------------------------------------------------------------
 if KNN_classification:
+    time = time.time()
     print("KNN classification")
     # Perform k-means clustering on training data 
     start_training = False
@@ -245,6 +264,14 @@ if KNN_classification:
             correct_labels_indexes.append(i)
         else:
             failed_labels_indexes.append(i)
+
+    time_end = time.time()
+    # Convert to hours, minutes and seconds
+    time_elapsed = time_end - time_start
+    hours = int(time_elapsed // 3600)
+    minutes = int((time_elapsed % 3600) // 60)
+    seconds = int(time_elapsed % 60)
+    print("Training time: ", hours, "h", minutes, "m", seconds, "s")
 
     # Find confusion matrix
     confusion_matrix = confusion_matrix_func(classified_labels, test_label, C)
