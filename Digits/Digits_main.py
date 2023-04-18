@@ -20,7 +20,7 @@ visualize_NN_comparison = False      # Visualize nearest neighbor comparison tes
 N_Comparisons = 5                    # Number of comparisons to visualize
 
 # Classification methods
-NN_mean_classification   = False     # Use means nearest neighbor classifier
+NN_mean_classification   = True     # Use means nearest neighbor classifier
 NN_actual_classification = False     # Use the actual nearest neighbor classifier
 Kmeans_classification    = False     # Use k-means clustering classifier
 KNN_classification       = False     # Use k-nearest neighbor classifier
@@ -40,6 +40,8 @@ test_data = test_data / 255
 
 # Classify test data with mean cluster nearest neighbor classifier -------------------------------------------------------------------
 if NN_mean_classification:
+    time_start = time.time()
+
     print("NN mean classification")
     
     print("Start training")
@@ -140,6 +142,7 @@ if NN_actual_classification:
 
 # Classify test data with Kmeans classifier----------------------------------------------------------------------------------------------------------------------
 if Kmeans_classification:
+    time = time.time()
     print("K-means classification")
     
     print("Start training")
@@ -211,6 +214,7 @@ if Kmeans_classification:
 
 # Classify test data with KNN classifier----------------------------------------------------------------------------------------------------------------------
 if KNN_classification:
+    time = time.time()
     print("KNN classification")
 
     print("Start training")
