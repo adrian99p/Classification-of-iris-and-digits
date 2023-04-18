@@ -12,6 +12,7 @@ np.set_printoptions(precision=3, suppress=True)
 N_train = 60000                      # Number of training samples                 
 N_test  = 10000                     # Number of test samples
 C = 10                               # Number of classes
+K = 7                                 # Number of nearest neighbors
 N_pixels = 784                       # Number of pixels in image
 M_clusters = 640                      # Number of clusters
 visualize_confusion_matrix = False   # Visualize confusion images
@@ -229,8 +230,6 @@ if KNN_classification:
             distance = euclidean_distance(test_image, mean_image, N_pixels)
             distances[j] = distance
 
-        # Find K nearest neighbors
-        K = 7
         nearest_neighbors = np.argsort(distances)[:K]
 
         nearest_neighbors_labels = []
