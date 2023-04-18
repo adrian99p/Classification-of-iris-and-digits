@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import math
 
 # Calculate mean value of training data for each label
 def mean_digit_value_image(train_data, train_label, C, N_pixels):
@@ -37,13 +38,14 @@ def error_rate_func(confusion_matrix):
 def plot_digit(data_set, index):
     plt.imshow(data_set[index], cmap=plt.get_cmap('gray'))
 
-def plot_confusion_matrix(confusion_matrix, error_rate):
-    plt.figure(figsize = (10,7))
-    plt.title('Confusion matrix\n'+'Error rate: '+str(error_rate*100)+'%')
-    sns.heatmap(confusion_matrix, annot=True, fmt='.0f') 
-    plt.xlabel('Predicted label')
-    plt.ylabel('True label')
-    plt.show()
+def plot_confusion_matrix(confusion_matrix, error_rate, visualize):
+    if visualize:
+        plt.figure(figsize = (10,7))
+        plt.title('Confusion matrix\n'+'Error rate: '+str(error_rate*100)+'%')
+        sns.heatmap(confusion_matrix, annot=True, fmt='.0f') 
+        plt.xlabel('Predicted label')
+        plt.ylabel('True label')
+        plt.show()
 
 def plot_classified_image(test_image, mean_image):
     plt.subplot(1, 2, 1)
@@ -80,19 +82,35 @@ def compare_test_images(N_plots, test_data, mean_data, classified_labels, labels
             plt.title('Difference image')
 
 # Plot cluster_to_digit image in sorted order
-def plot_cluster_to_digit(cluster_to_digit, kmeans_centers,M_clusters):
-    fig, axes = plt.subplots(8, 8, figsize=(10, 10))
-    fig.suptitle(str(M_clusters) + " clusters mapped to a digit ", fontsize=16, fontweight="bold")
+def plot_cluster_to_digit(cluster_to_digit, kmeans_centers, M_clusters):
+    sqrt_M = math.ceil(math.sqrt(M_clusters))
+    fig, axes = plt.subplots(sqrt_M, sqrt_M, figsize=(12, 12))
+    fig.suptitle(str(M_clusters) + " clusters mapped to a digit", fontsize=max(18 - math.sqrt(M_clusters), 10), fontweight="bold")
 
     cluster_to_digit_sorted = sorted(cluster_to_digit.items(), key=lambda x: x[1])
     for i in range(len(cluster_to_digit_sorted)):
         digit = cluster_to_digit_sorted[i][1]
         mean_image = kmeans_centers[cluster_to_digit_sorted[i][0]]
-        # Subplot mean_image in sorted order depending on M_clusters
-        plt.subplot(8, 8, i + 1)
-        plt.imshow(mean_image.reshape(28, 28), cmap="gray")
-        plt.title(digit, fontsize=8, color="red", fontweight="bold", y=-0.33, x=0.5)
-        plt.axis("off")
+
+        # Compute row and column indices for the subplot
+        row_idx = i // sqrt_M
+        col_idx = i % sqrt_M
         
+        # Plot the mean image with appropriate subplot index
+        ax = axes[row_idx, col_idx]
+        ax.imshow(mean_image.reshape(28, 28), cmap="gray")
+        ax.set_title(str(digit), fontsize=max(20 - math.sqrt(M_clusters), 8), color="red", fontweight="bold", y=-0.33, x=0.5)
+        ax.axis("off")
+
+    plt.subplots_adjust(wspace=0.1, hspace=0.5)
     plt.show()
 
+
+
+# Print time nicely
+def print_time(start_time, end_time):
+    time = end_time - start_time
+    hours = int(time // 3600)
+    minutes = int((time % 3600) // 60)
+    seconds = int(time % 60)
+    print("Time: {:02d}:{:02d}:{:02d}".format(hours, minutes, seconds))
