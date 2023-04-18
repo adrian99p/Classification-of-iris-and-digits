@@ -105,9 +105,7 @@ def plot_cluster_to_digit(cluster_to_digit, kmeans_centers, M_clusters):
     plt.subplots_adjust(wspace=0.1, hspace=0.5)
     plt.show()
 
-
-
-# Print time nicely
+# Print training time nicely
 def print_time(start_time, end_time):
     time = end_time - start_time
     hours = int(time // 3600)
