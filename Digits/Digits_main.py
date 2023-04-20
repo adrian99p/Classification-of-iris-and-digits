@@ -129,10 +129,7 @@ if Kmeans_classification:
 
     # Classify test data with nearest neighbor classifier
     classified_labels = []
-    correct_labels_indexes = []
-    failed_labels_indexes = []
-    actual_labels = []
-
+   
     # Calculate distances for each test data
     for i in range(N_test):
         # Get test image
@@ -148,12 +145,6 @@ if Kmeans_classification:
         label = np.argmin(distances)
         label = cluster_to_digit[label]
         classified_labels.append(label)
-        actual_labels.append(test_label[i])
-
-        if label == test_label[i]:
-            correct_labels_indexes.append(i)
-        else:
-            failed_labels_indexes.append(i)
     
     # Print training time
     time_end = time.time()
@@ -208,9 +199,7 @@ if KNN_classification:
 
     # Classify test data using K-nearest neighbor classifier
     classified_labels = []
-    correct_labels_indexes = []
-    failed_labels_indexes = []
-    actual_labels = []
+
     for i in range(N_test):
         # Get test image
         test_image = test_data[i]
@@ -230,12 +219,6 @@ if KNN_classification:
         # Find label with most occurences
         label = np.argmax(np.bincount(nearest_neighbors_labels))
         classified_labels.append(label)
-        actual_labels.append(test_label[i])
-
-        if label == test_label[i]:
-            correct_labels_indexes.append(i)
-        else:
-            failed_labels_indexes.append(i)
 
     # Print training time
     time_end = time.time()
