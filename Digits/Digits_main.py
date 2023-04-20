@@ -20,7 +20,7 @@ visualize_NN_comparison = False      # Visualize nearest neighbor comparison tes
 N_Comparisons = 5                    # Number of comparisons to visualize
 
 # Classification methods
-NN_mean_classification   = True     # Use means nearest neighbor classifier
+NN_mean_classification   = False     # Use means nearest neighbor classifier
 NN_actual_classification = False     # Use the actual nearest neighbor classifier
 Kmeans_classification    = False     # Use k-means clustering classifier
 KNN_classification       = False     # Use k-nearest neighbor classifier
@@ -287,4 +287,8 @@ if KNN_classification:
     error_rate = error_rate_func(confusion_matrix)
     print("Error rate: ", error_rate*100, "%")
 # ---------------------------------------------------------------------------------------------------------------------
+# Load confusion matrix from file
+confusion_matrix = np.loadtxt("confusion_matrix_actual_NN.txt", dtype=int)
+plot_confusion_matrix(confusion_matrix, error_rate_func(confusion_matrix),True)
+
 plt.show()

@@ -10,10 +10,10 @@ C = 3                               # Number of classes
 N_train = 30                        # Number of training data
 N_test  = 20                        # Number of test data
 first_30_to_train = True            # Use first 30 data points for training and last 20 for testing
-disabled_features = ['SW','SL']           # Which features to disable
+disabled_features = []              # Which features to disable
 D = D - len(disabled_features)      # Update D
-visualize_histogram = False          # Plot histograms of the data
-visualize_confusion_matrix = True   # Plot confusion matrix
+visualize_histogram = False         # Plot histograms of the data
+visualize_confusion_matrix = False  # Plot confusion matrix
 visualize_MSE = False               # Plot MSE vs iteration
 
 # Load seperate iris data
@@ -32,6 +32,9 @@ train_data, test_data = create_train_test_data(setosa, versicolour, verginica, N
 # Normalizing the data
 max_features_val = np.array([train_data[:,i].max() for i in range(D)])
 normal_train_data = train_data/max_features_val
+
+# Save max values to file
+np.savetxt("Iris_max_values.txt", max_features_val)
 
 # Target vectors one hot encoded
 t1 = np.array([1, 0, 0])
