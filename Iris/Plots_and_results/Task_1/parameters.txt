@@ -3,5 +3,5 @@ C = 3                     # Number of classes
 N_train = 30              # Number of training data
 N_test = 20               # Number of test data
 
-alpha = 0.01
+alpha = 0.005
 iterations = 1000

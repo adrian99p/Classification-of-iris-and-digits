@@ -35,6 +35,7 @@ def grad_W_MSE_func(g_k, t_k, x_k, D):
     B = B.reshape(D+1, 1)
     return A @ B.T
 
+
 # Plotting functions
 def plot_MSE(MSE_list):
     plt.figure()
@@ -49,22 +50,26 @@ def print_accuracy_for_confusion_matrix(confusion_matrix, label_names):
     print("Accuracy for", label_names,"data:", accuracy)
     print("Error rate for",label_names,"data:", round(1-accuracy,4))
 
-def plot_confusion_matrix(confusion_matrix_train,confusion_matrix_test, label_names, first_30_to_train):
+def plot_confusion_matrix(confusion_matrix_train,confusion_matrix_test, label_names, first_30_to_train, error_rate_train, error_rate_test):
     class_labels = label_names
     df_cm_test = pd.DataFrame(confusion_matrix_test, index = [i for i in class_labels], columns = [i for i in class_labels])
     plt.figure(figsize = (10,7))
+    
+    #Confusion matrix for test data
     if first_30_to_train:
-        plt.title("Confusion matrix for test data using first 30")
+        plt.title("Confusion matrix for test data using first 30\n" + "Error rate: " + str(error_rate_test) + "%")
     else:
-        plt.title("Confusion matrix for test data using last 30")
+        plt.title("Confusion matrix for test data using last 30\n" + "Error rate: " + str(error_rate_test) + "%")
+    
     sns.heatmap(df_cm_test, annot=True)
-
+    
+    # Confusion matrix for train data
     df_cm_train = pd.DataFrame(confusion_matrix_train, index = [i for i in class_labels], columns = [i for i in class_labels])
     plt.figure(figsize = (10,7))
     if first_30_to_train:
-        plt.title("Confusion matrix for training data using first 30")
+        plt.title("Confusion matrix for train data using first 30\n" + "Error rate: " + str(error_rate_train) + "%")
     else:
-        plt.title("Confusion matrix for training data using last 30")
+        plt.title("Confusion matrix for train data using last 30\n" + "Error rate: " + str(error_rate_train) + "%")
     sns.heatmap(df_cm_train, annot=True)
 
 def plot_histograms(train_data, N_train):

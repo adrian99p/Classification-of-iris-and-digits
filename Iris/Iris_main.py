@@ -10,10 +10,11 @@ C = 3                               # Number of classes
 N_train = 30                        # Number of training data
 N_test  = 20                        # Number of test data
 first_30_to_train = True            # Use first 30 data points for training and last 20 for testing
-disabled_features = []              # Which features to disable
+disabled_features = ['SW','SL']           # Which features to disable
 D = D - len(disabled_features)      # Update D
-visualize_histogram = False         # Plot histograms of the data
-visualize_confusion_matrix = False  # Plot confusion matrix
+visualize_histogram = False          # Plot histograms of the data
+visualize_confusion_matrix = True   # Plot confusion matrix
+visualize_MSE = False               # Plot MSE vs iteration
 
 # Load seperate iris data
 setosa      = pd.read_csv('Iris_raw_data/class_1.csv', header=0)
@@ -43,7 +44,7 @@ label_test = np.vstack((np.tile(t1, (N_test, 1)), np.tile(t2, (N_test, 1)), np.t
 W = np.zeros((C, D+1))   # Initial Weights
 training = True
 iterations = 1000
-learning_rate = 0.01
+learning_rate = 0.005
 
 MSE_list = []         
 print("\nStarting training")
@@ -75,8 +76,16 @@ np.set_printoptions(precision=2, suppress=True)
 print("Weights:")
 print(W)
 
+# Save weights to file
+np.savetxt("Iris_weights_2_features.txt", W)
+
 # Plot functions
-plot_MSE(MSE_list)
+if visualize_MSE:
+    plt.plot(MSE_list)
+    plt.title("MSE vs iteration\nLearning rate: " + str(learning_rate) + ", Iterations: " + str(iterations) + ", Time: " + str(elapsed_time) + "s")
+    plt.xlabel("Iteration")
+    plt.ylabel("MSE")
+    plt.show()
 
 # Find confusion matrix for training data
 confusion_matrix_train = np.zeros((C, C))
@@ -121,9 +130,12 @@ print_accuracy_for_confusion_matrix(confusion_matrix_test,"test")
 # START OF TASK 2
 
 # Plotting confusion matrices for training and test data
+error_rate_train_percent = round((1 - accuracy_train)*100, 2)
+error_rate_test_percent = round((1 - accuracy_test)*100, 2)
+
 label_names = ["Setosa", "Versicolour", "Verginica"]
 if visualize_confusion_matrix:
-    plot_confusion_matrix(confusion_matrix_train,confusion_matrix_test, label_names, first_30_to_train)
+    plot_confusion_matrix(confusion_matrix_train,confusion_matrix_test, label_names, first_30_to_train,error_rate_train_percent,error_rate_test_percent)
 
 if visualize_histogram and D == 4: 
     #Plot 3 histograms for feature x for all classes
