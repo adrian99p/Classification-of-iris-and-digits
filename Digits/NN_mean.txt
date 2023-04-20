@@ -1,0 +1,50 @@
+# Classify test data with mean cluster nearest neighbor classifier -------------------------------------------------------------------
+if NN_mean_classification:
+    time_start = time.time()
+
+    print("NN mean classification")
+    
+    print("Start training")
+    time_start = time.time()
+
+    classified_labels = []
+    correct_labels_indexes = []
+    failed_labels_indexes = []
+    
+    # Calculate mean value of training data for each label
+    mean_data = mean_digit_value_image(train_data, train_label, C, N_pixels)
+
+    # Calculate distance to mean image for each label
+    for i in range(N_test):
+        # Get test image
+        test_image = test_data[i]
+
+        distances = []
+        for j in range(C):
+            mean_image = mean_data[j]
+            distance = euclidean_distance(test_image, mean_image, N_pixels)
+            distances.append(distance)
+        
+        # Find label with smallest distance
+        label = np.argmin(distances)
+        
+        if label == test_label[i]:
+            correct_labels_indexes.append(i)
+        else:
+            failed_labels_indexes.append(i)
+        classified_labels.append(label)
+
+    # Print training time
+    time_end = time.time()
+    print_time(time_start, time_end)
+
+    # Find confusion matrix
+    confusion_matrix = confusion_matrix_func(classified_labels, test_label, C)
+    print(confusion_matrix)
+
+    # Print error rate
+    error_rate = error_rate_func(confusion_matrix)
+    print("Error rate: ", error_rate*100, "%")    
+
+    # Plot confusion matrix
+    plot_confusion_matrix(confusion_matrix, error_rate, visualize_confusion_matrix)

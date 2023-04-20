@@ -9,21 +9,22 @@ import time
 np.set_printoptions(precision=3, suppress=True)
 
 # Parameters
-N_train = 60000                      # Number of training samples                 
-N_test  = 10000                      # Number of test samples
+N_train = 6000                       # Number of training samples                 
+N_test  = 100                        # Number of test samples
 C = 10                               # Number of classes
-K = 7                                # Number of nearest neighbors
-M_clusters = 64                      # Number of clusters
+K_neighbors = 2                      # Number of nearest neighbors
+M_clusters = 10                      # Number of clusters
 N_pixels = 784                       # Number of pixels in image
-visualize_confusion_matrix = False   # Visualize confusion images
-visualize_NN_comparison = False      # Visualize nearest neighbor comparison test, prediction
-N_Comparisons = 5                    # Number of comparisons to visualize
 
 # Classification methods
-NN_mean_classification   = False     # Use means nearest neighbor classifier
-NN_actual_classification = False     # Use the actual nearest neighbor classifier
-Kmeans_classification    = False     # Use k-means clustering classifier
-KNN_classification       = False     # Use k-nearest neighbor classifier
+NN_classification        = False     # Use the nearest neighbor classifier
+Kmeans_classification    = False     # Use NN with k-means clustering classifier
+KNN_classification       = False     # Use k-nearest neighbor classifier with k-means clustering
+
+# Plot parameters
+visualize_confusion_matrix = True   # Visualize confusion images
+visualize_NN_comparison = False     # Visualize nearest neighbor comparison test, prediction
+N_Comparisons = 5                   # Number of comparisons to visualize
 
 # Load MNIST hand written digit data
 (train_data, train_label), (test_data, test_label) = mnist.load_data()
@@ -37,61 +38,11 @@ test_label = test_label[:N_test]
 # Normalize data so grayscale values are between 0 and 1
 train_data = train_data / 255
 test_data = test_data / 255
+K = 2
 
-# Classify test data with mean cluster nearest neighbor classifier -------------------------------------------------------------------
-if NN_mean_classification:
-    time_start = time.time()
-
-    print("NN mean classification")
-    
-    print("Start training")
-    time_start = time.time()
-
-    classified_labels = []
-    correct_labels_indexes = []
-    failed_labels_indexes = []
-    
-    # Calculate mean value of training data for each label
-    mean_data = mean_digit_value_image(train_data, train_label, C, N_pixels)
-
-    # Calculate distance to mean image for each label
-    for i in range(N_test):
-        # Get test image
-        test_image = test_data[i]
-
-        distances = []
-        for j in range(C):
-            mean_image = mean_data[j]
-            distance = euclidean_distance(test_image, mean_image, N_pixels)
-            distances.append(distance)
-        
-        # Find label with smallest distance
-        label = np.argmin(distances)
-        
-        if label == test_label[i]:
-            correct_labels_indexes.append(i)
-        else:
-            failed_labels_indexes.append(i)
-        classified_labels.append(label)
-
-    # Print training time
-    time_end = time.time()
-    print_time(time_start, time_end)
-
-    # Find confusion matrix
-    confusion_matrix = confusion_matrix_func(classified_labels, test_label, C)
-    print(confusion_matrix)
-
-    # Print error rate
-    error_rate = error_rate_func(confusion_matrix)
-    print("Error rate: ", error_rate*100, "%")    
-
-    # Plot confusion matrix
-    plot_confusion_matrix(confusion_matrix, error_rate, visualize_confusion_matrix)
-
-# Classify test data with actual nearestest neighbor classifier -------------------------------------------------------------------
-if NN_actual_classification:
-    print("Actual NN classification")
+# Classify test data with nearest neighbor classifier -------------------------------------------------------------------
+if NN_classification:
+    print("NN classification")
     
     print("Start training")
     time_start = time.time()
@@ -123,6 +74,7 @@ if NN_actual_classification:
 
     # Print training time
     time_end = time.time()
+    training_time = int(time_end - time_start)
     print_time(time_start, time_end)
 
     # Find confusion matrix
@@ -135,14 +87,16 @@ if NN_actual_classification:
     print("Error rate: ", error_rate*100, "%")
 
     # Save confusion matrix to file
-    np.savetxt("confusion_matrix_actual_NN.txt", confusion_matrix, fmt="%d")
+    save_to_file("NN/CM_NN_", confusion_matrix, error_rate, N_train, N_test, training_time)
 
     # Visualize confusion matrix
-    plot_confusion_matrix(confusion_matrix, error_rate, visualize_confusion_matrix)
+    plot_confusion_matrix("NN", confusion_matrix, error_rate, visualize_confusion_matrix)
+
+    # Visualize nearest neighbor comparison test, prediction
+    plot_NN_comparison(test_data, test_label, classified_labels, correct_labels_indexes, failed_labels_indexes, N_Comparisons, visualize_NN_comparison)
 
 # Classify test data with Kmeans classifier----------------------------------------------------------------------------------------------------------------------
 if Kmeans_classification:
-    time = time.time()
     print("K-means classification")
     
     print("Start training")
@@ -154,7 +108,7 @@ if Kmeans_classification:
         kmeans = KMeans(n_clusters=M_clusters, random_state=0).fit(train_data.reshape(N_train, N_pixels))
         kmeans_centers = kmeans.cluster_centers_
 
-        #Store cluster labels for training data and cluster centers in a file in a folder called "Digits"
+        #Store cluster labels for training data and cluster centers in a file in a folder called "kmeans_trained"
         np.savetxt("kmeans_trained/cluster_labels.txt", kmeans.labels_, fmt="%d")
         np.savetxt("kmeans_trained/cluster_centers.txt", kmeans_centers, fmt="%f")
 
@@ -200,7 +154,12 @@ if Kmeans_classification:
             correct_labels_indexes.append(i)
         else:
             failed_labels_indexes.append(i)
-        
+    
+    # Print training time
+    time_end = time.time()
+    training_time = int(time_end - time_start)
+    print_time(time_start, time_end)
+
     # Find confusion matrix
     confusion_matrix = confusion_matrix_func(classified_labels, test_label, C)
     print(confusion_matrix)
@@ -209,19 +168,21 @@ if Kmeans_classification:
     error_rate = error_rate_func(confusion_matrix)
     print("Error rate: ", error_rate*100, "%")
 
+    # Save confusion matrix to file
+    save_to_file("Kmeans/CM_Kmeans_", confusion_matrix ,error_rate, N_train, N_test, training_time)
+
     # Plot confusion matrix
-    plot_confusion_matrix(confusion_matrix, error_rate, visualize_confusion_matrix)
+    plot_confusion_matrix("Kmeans", confusion_matrix, error_rate, visualize_confusion_matrix)
 
 # Classify test data with KNN classifier----------------------------------------------------------------------------------------------------------------------
 if KNN_classification:
-    time = time.time()
     print("KNN classification")
 
     print("Start training")
     time_start = time.time()
 
     # Perform k-means clustering on training data 
-    start_training = False
+    start_training = True
     if start_training:
         kmeans = KMeans(n_clusters=M_clusters, random_state=0).fit(train_data.reshape(N_train, N_pixels))
         kmeans_centers = kmeans.cluster_centers_
@@ -260,7 +221,7 @@ if KNN_classification:
             distance = euclidean_distance(test_image, mean_image, N_pixels)
             distances[j] = distance
 
-        nearest_neighbors = np.argsort(distances)[:K]
+        nearest_neighbors = np.argsort(distances)[:K_neighbors]
 
         nearest_neighbors_labels = []
         for neighbor in nearest_neighbors:
@@ -278,6 +239,7 @@ if KNN_classification:
 
     # Print training time
     time_end = time.time()
+    training_time = int(time_end - time_start)
     print_time(time_start, time_end)
 
     # Find confusion matrix
@@ -286,9 +248,12 @@ if KNN_classification:
 
     error_rate = error_rate_func(confusion_matrix)
     print("Error rate: ", error_rate*100, "%")
-# ---------------------------------------------------------------------------------------------------------------------
-# Load confusion matrix from file
-confusion_matrix = np.loadtxt("confusion_matrix_actual_NN.txt", dtype=int)
-plot_confusion_matrix(confusion_matrix, error_rate_func(confusion_matrix),True)
 
+    # Save confusion matrix to file
+    save_to_file("KNN/CM_KNN_", confusion_matrix ,error_rate, N_train, N_test, training_time)
+
+    # Plot confusion matrix
+    plot_confusion_matrix("KNN, K=" + str(K),confusion_matrix, error_rate, visualize_confusion_matrix)
+
+# ---------------------------------------------------------------------------------------------------------------------
 plt.show()

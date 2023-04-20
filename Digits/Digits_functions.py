@@ -38,10 +38,10 @@ def error_rate_func(confusion_matrix):
 def plot_digit(data_set, index):
     plt.imshow(data_set[index], cmap=plt.get_cmap('gray'))
 
-def plot_confusion_matrix(confusion_matrix, error_rate, visualize):
+def plot_confusion_matrix(titleCF,confusion_matrix, error_rate, visualize):
     if visualize:
         plt.figure(figsize = (10,7))
-        plt.title('Confusion matrix\n'+'Error rate: '+str(error_rate*100)+'%')
+        plt.title('Confusion matrix for ' + titleCF + '\n'+'Error rate: '+str(error_rate*100)+'%')
         sns.heatmap(confusion_matrix, annot=True, fmt='.0f') 
         plt.xlabel('Predicted label')
         plt.ylabel('True label')
@@ -112,3 +112,32 @@ def print_time(start_time, end_time):
     minutes = int((time % 3600) // 60)
     seconds = int(time % 60)
     print("Time: {:02d}:{:02d}:{:02d}".format(hours, minutes, seconds))
+
+
+# Save to file
+def save_to_file(file_name, confusion_matrix, error_rate, N_train, N_test, time):
+    file_title = "Plots_and_results/"+ file_name +"N_train_" + str(N_train) + "_N_test_" + str(N_test) + ".txt"
+    with open(file_title, 'w') as f:
+        f.write("Confusion matrix:\n")
+        f.write(str(confusion_matrix))
+        f.write("\nError rate: "+str(error_rate*100)+"%\n")
+        f.write("Time: "+str(time)+"\n")
+    
+    print("Saved to file: " + file_title)
+
+# plot NN comparison
+def plot_NN_comparison(test_data, test_label, classified_labels, correct_labels_indexes, failed_labels_indexes, N_Comparisons, visualize_NN_comparison):
+    N_Comparisons = min(N_Comparisons, len(correct_labels_indexes), len(failed_labels_indexes))
+    if visualize_NN_comparison:
+        plt.figure(figsize=(10, 10))
+        for i in range(N_Comparisons):
+            plt.subplot(2, N_Comparisons, i+1)
+            plt.imshow(test_data[correct_labels_indexes[i]], cmap=plt.get_cmap('gray'))
+            plt.title("True label: " + str(test_label[correct_labels_indexes[i]]) + "\nPredicted label: " + str(classified_labels[correct_labels_indexes[i]]))
+            plt.axis('off')
+
+            plt.subplot(2, N_Comparisons, i+1+N_Comparisons)
+            plt.imshow(test_data[failed_labels_indexes[i]], cmap=plt.get_cmap('gray'))
+            plt.title("True label: " + str(test_label[failed_labels_indexes[i]]) + "\nPredicted label: " + str(classified_labels[failed_labels_indexes[i]]))
+            plt.axis('off')
+        plt.show()
