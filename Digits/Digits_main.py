@@ -9,10 +9,10 @@ import time
 np.set_printoptions(precision=3, suppress=True)
 
 # Parameters
-N_train = 6000                    # Number of training samples                 
-N_test  = 100                    # Number of test samples
+N_train = 60000                    # Number of training samples                 
+N_test  = 10000                    # Number of test samples
 C = 10                             # Number of classes
-K_neighbors = 2                    # Number of nearest neighbors
+K_neighbors = 3                    # Number of nearest neighbors
 M_clusters  = 64                   # Number of clusters
 N_pixels    = 784                  # Number of pixels in image
 
@@ -194,7 +194,7 @@ if KNN_classification:
         cluster_to_digit[cluster_label] = majority_digit_label
 
     # Plot cluster_to_digit image in sorted order
-    plot_cluster_to_digit(cluster_to_digit, kmeans_centers,M_clusters)
+    #plot_cluster_to_digit(cluster_to_digit, kmeans_centers,M_clusters)
 
     # Classify test data using K-nearest neighbor classifier
     classified_labels = []
