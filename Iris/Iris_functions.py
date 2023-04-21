@@ -93,10 +93,10 @@ def plot_histograms(train_data, N_train):
     feature_plot_2 = [feature_2_class_1, feature_2_class_2, feature_2_class_3]
     feature_plot_3 = [feature_3_class_1, feature_3_class_2, feature_3_class_3]
     feature_plot_4 = [feature_4_class_1, feature_4_class_2, feature_4_class_3]
-    feature_plot_1_text = ['Setosa', 'Versicolour', 'Veriginica']
-    feature_plot_2_text = ['Setosa', 'Versicolour', 'Veriginica']
-    feature_plot_3_text = ['Setosa', 'Versicolour', 'Veriginica']
-    feature_plot_4_text = ['Setosa', 'Versicolour', 'Veriginica']
+    feature_plot_1_text = ['Setosa', 'Versicolour', 'Verginica']
+    feature_plot_2_text = ['Setosa', 'Versicolour', 'Verginica']
+    feature_plot_3_text = ['Setosa', 'Versicolour', 'Verginica']
+    feature_plot_4_text = ['Setosa', 'Versicolour', 'Verginica']
 
     #Define the features and their corresponding labels
     features = [feature_plot_1, feature_plot_2, feature_plot_3, feature_plot_4]
