@@ -141,7 +141,7 @@ if visualize_confusion_matrix:
 
 if visualize_histogram and D == 4: 
     #Plot 3 histograms for feature x for all classes
-    plot_histograms(train_data,N_test)
+    plot_histograms(train_data,N_train)
 
 # Show all figures     
 plt.show()

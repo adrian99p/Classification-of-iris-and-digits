@@ -19,7 +19,8 @@ N_pixels    = 784                  # Number of pixels in image
 # Classification methods
 NN_classification      = False     # Use the nearest neighbor classifier
 Kmeans_classification  = False      # Use NN with k-means clustering classifier
-KNN_classification     = True     # Use k-nearest neighbor classifier with k-means clustering
+KNN_classification     = False     # Use k-nearest neighbor classifier with k-means clustering
+KNN_without_cluster_classification = True
 
 # Plot parameters
 visualize_confusion_matrix = True  # Visualize confusion images
@@ -236,6 +237,53 @@ if KNN_classification:
 
     # Plot confusion matrix
     plot_confusion_matrix("KNN, K=" + str(K_neighbors),confusion_matrix, error_rate, visualize_confusion_matrix)
+
+# KNN without clustering ------------------------------------------------------------------------------------------------
+if KNN_without_cluster_classification:
+    print("KNN, K="+ str(K_neighbors) + "without clustering" + "classification")
+    
+    print("Start training")
+    time_start = time.time()
+    classified_labels = []
+    for i in range(N_test):
+        # Get test image
+        test_image = test_data[i]
+
+        distances = np.zeros(N_train)
+        for j in range(N_train):
+            mean_image = train_data[j]
+            distance = euclidean_distance(test_image, mean_image, N_pixels)
+            distances[j] = distance
+
+        nearest_neighbors = np.argsort(distances)[:K_neighbors]
+
+        nearest_neighbors_labels = []
+        for neighbor in nearest_neighbors:
+            nearest_neighbors_labels.append(train_label[neighbor])
+
+        # Find label with most occurences
+        label = np.argmax(np.bincount(nearest_neighbors_labels))
+        classified_labels.append(label)
+
+    # Print training time
+    time_end = time.time()
+    training_time = int(time_end - time_start)
+    print_time(time_start, time_end)
+
+    # Find confusion matrix
+    confusion_matrix = confusion_matrix_func(classified_labels, test_label, C)
+    print("Confusion matrix: ")
+    print(confusion_matrix)
+
+    # Print error rate
+    error_rate = error_rate_func(confusion_matrix)
+    print("Error rate: ", error_rate*100, "%")
+
+    # Save confusion matrix to file
+    save_to_file("NN/KNN_TEST", confusion_matrix, error_rate, N_train, N_test, training_time)
+
+    # Visualize confusion matrix
+    plot_confusion_matrix("NN", confusion_matrix, error_rate, visualize_confusion_matrix)
 
 # ---------------------------------------------------------------------------------------------------------------------
 plt.show()
