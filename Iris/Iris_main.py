@@ -12,6 +12,8 @@ N_test  = 20                        # Number of test data
 first_30_to_train = True            # Use first 30 data points for training and last 20 for testing
 disabled_features = []              # Which features to disable
 D = D - len(disabled_features)      # Update D
+
+# Plot parameters
 visualize_histogram = False         # Plot histograms of the data
 visualize_confusion_matrix = False  # Plot confusion matrix
 visualize_MSE = False               # Plot MSE vs iteration
@@ -78,9 +80,6 @@ print("Training done\n")
 np.set_printoptions(precision=2, suppress=True)
 print("Weights:")
 print(W)
-
-# Save weights to file
-np.savetxt("Iris_weights_2_features.txt", W)
 
 # Plot functions
 if visualize_MSE:

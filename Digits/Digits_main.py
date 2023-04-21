@@ -9,36 +9,35 @@ import time
 np.set_printoptions(precision=3, suppress=True)
 
 # Parameters
-N_train = 6000                       # Number of training samples                 
-N_test  = 100                        # Number of test samples
-C = 10                               # Number of classes
-K_neighbors = 2                      # Number of nearest neighbors
-M_clusters = 10                      # Number of clusters
-N_pixels = 784                       # Number of pixels in image
+N_train = 6000                    # Number of training samples                 
+N_test  = 100                    # Number of test samples
+C = 10                             # Number of classes
+K_neighbors = 2                    # Number of nearest neighbors
+M_clusters  = 64                   # Number of clusters
+N_pixels    = 784                  # Number of pixels in image
 
 # Classification methods
-NN_classification        = False     # Use the nearest neighbor classifier
-Kmeans_classification    = False     # Use NN with k-means clustering classifier
-KNN_classification       = False     # Use k-nearest neighbor classifier with k-means clustering
+NN_classification      = False     # Use the nearest neighbor classifier
+Kmeans_classification  = False      # Use NN with k-means clustering classifier
+KNN_classification     = True     # Use k-nearest neighbor classifier with k-means clustering
 
 # Plot parameters
-visualize_confusion_matrix = True   # Visualize confusion images
-visualize_NN_comparison = False     # Visualize nearest neighbor comparison test, prediction
-N_Comparisons = 5                   # Number of comparisons to visualize
+visualize_confusion_matrix = True  # Visualize confusion images
+visualize_NN_comparison    = True # Visualize nearest neighbor comparison test, prediction
+N_Comparisons = 5                  # Number of comparisons to visualize
 
 # Load MNIST hand written digit data
 (train_data, train_label), (test_data, test_label) = mnist.load_data()
 
 # Select only N_train and N_test data and labels
-train_data = train_data[:N_train]
+train_data  = train_data[:N_train]
 train_label = train_label[:N_train]
-test_data = test_data[:N_test]
-test_label = test_label[:N_test]
+test_data   = test_data[:N_test]
+test_label  = test_label[:N_test]
 
 # Normalize data so grayscale values are between 0 and 1
 train_data = train_data / 255
-test_data = test_data / 255
-K = 2
+test_data  = test_data / 255
 
 # Classify test data with nearest neighbor classifier -------------------------------------------------------------------
 if NN_classification:
@@ -236,7 +235,7 @@ if KNN_classification:
     save_to_file("KNN/CM_KNN_", confusion_matrix ,error_rate, N_train, N_test, training_time)
 
     # Plot confusion matrix
-    plot_confusion_matrix("KNN, K=" + str(K),confusion_matrix, error_rate, visualize_confusion_matrix)
+    plot_confusion_matrix("KNN, K=" + str(K_neighbors),confusion_matrix, error_rate, visualize_confusion_matrix)
 
 # ---------------------------------------------------------------------------------------------------------------------
 plt.show()
