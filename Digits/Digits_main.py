@@ -12,7 +12,7 @@ np.set_printoptions(precision=3, suppress=True)
 N_train = 60000                   # Number of training samples                 
 N_test  = 10000                    # Number of test samples
 C = 10                            # Number of classes
-K_neighbors = 7                   # Number of nearest neighbors
+K_neighbors = 7                  # Number of nearest neighbors
 M_clusters  = 64                  # Number of clusters
 N_pixels    = 784                 # Number of pixels in image
 
@@ -103,7 +103,7 @@ if Kmeans_classification:
     time_start = time.time()
     
     # Perform k-means clustering on training data 
-    start_training = False
+    start_training = True
     if start_training:
 
         # Create 64 clusters for each unique label from training data
@@ -176,7 +176,7 @@ if KNN_classification:
     time_start = time.time()
 
     # Perform k-means clustering on training data 
-    start_training = False
+    start_training = True
     if start_training:
 
         # Create 64 clusters for each unique label from training data
