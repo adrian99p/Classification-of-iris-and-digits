@@ -24,7 +24,7 @@ KNN_classification     = False    # Use k-nearest neighbor classifier with k-mea
 
 # Plot parameters
 visualize_confusion_matrix = True  # Visualize confusion images
-visualize_NN_comparison    = True # Visualize nearest neighbor comparison test, prediction
+visualize_NN_comparison    = True  # Visualize nearest neighbor comparison test, prediction
 N_Comparisons = 5                  # Number of comparisons to visualize
 
 # Load MNIST hand written digit data
