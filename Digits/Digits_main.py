@@ -10,16 +10,16 @@ np.set_printoptions(precision=3, suppress=True)
 
 # Parameters
 N_train = 60000                   # Number of training samples                 
-N_test  = 1000                    # Number of test samples
+N_test  = 10000                    # Number of test samples
 C = 10                            # Number of classes
-K_neighbors = 3                   # Number of nearest neighbors
+K_neighbors = 7                   # Number of nearest neighbors
 M_clusters  = 64                  # Number of clusters
 N_pixels    = 784                 # Number of pixels in image
 
 # Classification methods
-NN_classification      = True     # Use the nearest neighbor classifier
+NN_classification      = False     # Use the nearest neighbor classifier
 Kmeans_classification  = False    # Use NN with k-means clustering classifier
-KNN_classification     = False    # Use k-nearest neighbor classifier with k-means clustering
+KNN_classification     = True    # Use k-nearest neighbor classifier with k-means clustering
 
 
 # Plot parameters
@@ -103,29 +103,32 @@ if Kmeans_classification:
     time_start = time.time()
     
     # Perform k-means clustering on training data 
-    start_training = True
+    start_training = False
     if start_training:
-        kmeans = KMeans(n_clusters=M_clusters, random_state=0).fit(train_data.reshape(N_train, N_pixels))
-        kmeans_centers = kmeans.cluster_centers_
+
+        # Create 64 clusters for each unique label from training data
+        kmeans_centers = np.empty((0, N_pixels))
+        cluster_labels = np.empty((0, 1))
+
+        for i in range(C):
+            # Get indices for label i
+            label_indices = np.where(train_label == i)[0]
+            # Get data for label i
+            label_data = train_data[label_indices]
+            # Perform k-means clustering on label data
+            kmeans = KMeans(n_clusters=M_clusters, random_state=0).fit(label_data.reshape(len(label_indices), N_pixels))
+            # Store cluster centers
+            kmeans_centers = np.append(kmeans_centers, kmeans.cluster_centers_, axis=0)
+            # Append M_clusters cluster labels to cluster_labels
+            cluster_labels = np.append(cluster_labels, np.full((M_clusters, 1), i), axis=0)
 
         #Store cluster labels for training data and cluster centers in a file in a folder called "kmeans_trained"
-        np.savetxt("kmeans_trained/cluster_labels.txt", kmeans.labels_, fmt="%d")
+        np.savetxt("kmeans_trained/cluster_labels.txt", cluster_labels, fmt="%d")
         np.savetxt("kmeans_trained/cluster_centers.txt", kmeans_centers, fmt="%f")
 
     # Load cluster labels and cluster centers from file
     cluster_labels = np.loadtxt("kmeans_trained/cluster_labels.txt", dtype=int)
     kmeans_centers = np.loadtxt("kmeans_trained/cluster_centers.txt", dtype=float)
-
-    # Map cluster labels to digit labels using majority voting method
-    digit_labels = train_label
-    cluster_to_digit = {}
-    for cluster_label in range(len(kmeans_centers)):
-        cluster_digit_labels = digit_labels[cluster_labels == cluster_label]
-        majority_digit_label = np.argmax(np.bincount(cluster_digit_labels))
-        cluster_to_digit[cluster_label] = majority_digit_label
-
-    # Plot cluster_to_digit image in sorted order
-    plot_cluster_to_digit(cluster_to_digit, kmeans_centers,M_clusters)
 
     # Classify test data with nearest neighbor classifier
     classified_labels = []
@@ -143,7 +146,7 @@ if Kmeans_classification:
 
         # Find label with smallest distance
         label = np.argmin(distances)
-        label = cluster_to_digit[label]
+        label = cluster_labels[label]
         classified_labels.append(label)
     
     # Print training time
@@ -173,29 +176,32 @@ if KNN_classification:
     time_start = time.time()
 
     # Perform k-means clustering on training data 
-    start_training = True
+    start_training = False
     if start_training:
-        kmeans = KMeans(n_clusters=M_clusters, random_state=0).fit(train_data.reshape(N_train, N_pixels))
-        kmeans_centers = kmeans.cluster_centers_
 
-        #Store cluster labels for training data and cluster centers in a file in a folder called "Digits"
-        np.savetxt("kmeans_trained/cluster_labels.txt", kmeans.labels_, fmt="%d")
+        # Create 64 clusters for each unique label from training data
+        kmeans_centers = np.empty((0, N_pixels))
+        cluster_labels = np.empty((0, 1))
+
+        for i in range(C):
+            # Get indices for label i
+            label_indices = np.where(train_label == i)[0]
+            # Get data for label i
+            label_data = train_data[label_indices]
+            # Perform k-means clustering on label data
+            kmeans = KMeans(n_clusters=M_clusters, random_state=0).fit(label_data.reshape(len(label_indices), N_pixels))
+            # Store cluster centers
+            kmeans_centers = np.append(kmeans_centers, kmeans.cluster_centers_, axis=0)
+            # Append M_clusters cluster labels to cluster_labels
+            cluster_labels = np.append(cluster_labels, np.full((M_clusters, 1), i), axis=0)
+
+        #Store cluster labels for training data and cluster centers in a file in a folder called "kmeans_trained"
+        np.savetxt("kmeans_trained/cluster_labels.txt", cluster_labels, fmt="%d")
         np.savetxt("kmeans_trained/cluster_centers.txt", kmeans_centers, fmt="%f")
 
     # Load cluster labels and cluster centers from file
     cluster_labels = np.loadtxt("kmeans_trained/cluster_labels.txt", dtype=int)
     kmeans_centers = np.loadtxt("kmeans_trained/cluster_centers.txt", dtype=float)
-
-    # Map cluster labels to digit labels using majority voting method
-    digit_labels = train_label
-    cluster_to_digit = {}
-    for cluster_label in range(len(kmeans_centers)):
-        cluster_digit_labels = digit_labels[cluster_labels == cluster_label]
-        majority_digit_label = np.argmax(np.bincount(cluster_digit_labels))
-        cluster_to_digit[cluster_label] = majority_digit_label
-
-    # Plot cluster_to_digit image in sorted order
-    #plot_cluster_to_digit(cluster_to_digit, kmeans_centers,M_clusters)
 
     # Classify test data using K-nearest neighbor classifier
     classified_labels = []
@@ -214,7 +220,7 @@ if KNN_classification:
 
         nearest_neighbors_labels = []
         for neighbor in nearest_neighbors:
-            nearest_neighbors_labels.append(cluster_to_digit[neighbor])
+            nearest_neighbors_labels.append(cluster_labels[neighbor])
 
         # Find label with most occurences
         label = np.argmax(np.bincount(nearest_neighbors_labels))

@@ -32,7 +32,7 @@ def mahalanobis_distance(x, mean, cov, N_pixels):
 # Find error rate
 def error_rate_func(confusion_matrix):
     error = np.trace(confusion_matrix)
-    return round(1 - (error / np.sum(confusion_matrix)),2)
+    return round(1 - (error / np.sum(confusion_matrix)),5)
 
 # Plot functions
 def plot_digit(data_set, index):
@@ -81,28 +81,16 @@ def compare_test_images(N_plots, test_data, mean_data, classified_labels, labels
         if i == 0:
             plt.title('Difference image')
 
-# Plot cluster_to_digit image in sorted order
-def plot_cluster_to_digit(cluster_to_digit, kmeans_centers, M_clusters):
-    sqrt_M = math.ceil(math.sqrt(M_clusters))
-    fig, axes = plt.subplots(sqrt_M, sqrt_M, figsize=(12, 12))
-    fig.suptitle(str(M_clusters) + " clusters mapped to a digit", fontsize=max(18 - math.sqrt(M_clusters), 10), fontweight="bold")
-
-    cluster_to_digit_sorted = sorted(cluster_to_digit.items(), key=lambda x: x[1])
-    for i in range(len(cluster_to_digit_sorted)):
-        digit = cluster_to_digit_sorted[i][1]
-        mean_image = kmeans_centers[cluster_to_digit_sorted[i][0]]
-
-        # Compute row and column indices for the subplot
-        row_idx = i // sqrt_M
-        col_idx = i % sqrt_M
-        
-        # Plot the mean image with appropriate subplot index
-        ax = axes[row_idx, col_idx]
-        ax.imshow(mean_image.reshape(28, 28), cmap="gray")
-        ax.set_title(str(digit), fontsize=max(20 - math.sqrt(M_clusters), 8), color="red", fontweight="bold", y=-0.33, x=0.5)
-        ax.axis("off")
-
-    plt.subplots_adjust(wspace=0.1, hspace=0.5)
+# Plot 10 random kmeans_centers and the corresponding labels
+def plot_kmeans_centers(kmeans_centers, kmeans_labels, Num_images):
+    plt.figure()
+    for i in range(Num_images):
+        # genereate random index
+        index = np.random.randint(0, len(kmeans_labels))
+        # plot image
+        plt.subplot(2, Num_images, i+1)
+        plt.imshow(kmeans_centers[kmeans_labels[index]].reshape(28, 28), cmap=plt.get_cmap('gray'))
+        plt.title(str(kmeans_labels[index]))
     plt.show()
 
 # Print training time nicely
