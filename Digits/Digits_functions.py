@@ -81,16 +81,16 @@ def compare_test_images(N_plots, test_data, mean_data, classified_labels, labels
         if i == 0:
             plt.title('Difference image')
 
-# Plot 10 random kmeans_centers and the corresponding labels
-def plot_kmeans_centers(kmeans_centers, kmeans_labels, Num_images):
-    plt.figure()
-    for i in range(Num_images):
-        # genereate random index
-        index = np.random.randint(0, len(kmeans_labels))
-        # plot image
-        plt.subplot(2, Num_images, i+1)
-        plt.imshow(kmeans_centers[kmeans_labels[index]].reshape(28, 28), cmap=plt.get_cmap('gray'))
-        plt.title(str(kmeans_labels[index]))
+# Plot some clusters centers
+def plot_cluster_centers(centers):
+    plt.figure(figsize=(10, 100))
+    for i in range(100):
+        plt.subplot(10, 10, i+1)
+        plt.imshow(centers[i].reshape(28, 28), cmap=plt.get_cmap('gray'))
+        plt.axis('off')
+    # Add title
+    plt.suptitle("Some cluster centers for each digit", fontsize=20)
+
     plt.show()
 
 # Print training time nicely

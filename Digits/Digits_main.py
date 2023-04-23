@@ -10,17 +10,16 @@ np.set_printoptions(precision=3, suppress=True)
 
 # Parameters
 N_train = 60000                   # Number of training samples                 
-N_test  = 10000                    # Number of test samples
+N_test  = 10000                   # Number of test samples
 C = 10                            # Number of classes
-K_neighbors = 7                  # Number of nearest neighbors
+K_neighbors = 7                   # Number of nearest neighbors
 M_clusters  = 64                  # Number of clusters
 N_pixels    = 784                 # Number of pixels in image
 
 # Classification methods
-NN_classification      = False     # Use the nearest neighbor classifier
+NN_classification      = False    # Use the nearest neighbor classifier
 Kmeans_classification  = False    # Use NN with k-means clustering classifier
-KNN_classification     = True    # Use k-nearest neighbor classifier with k-means clustering
-
+KNN_classification     = False    # Use k-nearest neighbor classifier with k-means clustering
 
 # Plot parameters
 visualize_confusion_matrix = True  # Visualize confusion images
@@ -103,7 +102,7 @@ if Kmeans_classification:
     time_start = time.time()
     
     # Perform k-means clustering on training data 
-    start_training = True
+    start_training = False
     if start_training:
 
         # Create 64 clusters for each unique label from training data
@@ -129,6 +128,19 @@ if Kmeans_classification:
     # Load cluster labels and cluster centers from file
     cluster_labels = np.loadtxt("kmeans_trained/cluster_labels.txt", dtype=int)
     kmeans_centers = np.loadtxt("kmeans_trained/cluster_centers.txt", dtype=float)
+
+    # Put 10 clusters from each label in a np array
+    clusters_to_plot = np.empty((0, N_pixels))
+    for i in range(10):
+        # Get indices for label i
+        label_indices = np.where(cluster_labels == i)[0]
+        # Get data for label i
+        label_data = kmeans_centers[label_indices]
+        # Append 10 cluster centers from label i to clusters_to_plot
+        clusters_to_plot = np.append(clusters_to_plot, label_data[:10], axis=0)
+
+    # Plot some cluster centers
+    plot_cluster_centers(clusters_to_plot)
 
     # Classify test data with nearest neighbor classifier
     classified_labels = []
